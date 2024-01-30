@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "433205502607",
+    "project_id": "ecommerce-rosary",
+    "storage_bucket": "ecommerce-rosary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433205502607:android:f73818158018d799f206fa",
+        "android_client_info": {
+          "package_name": "com.example.shopper_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOYSHoaKGmfFioKz7AYbN4BmZjb1U1yZU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
