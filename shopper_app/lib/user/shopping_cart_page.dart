@@ -63,6 +63,16 @@ class ShoppingCartPage extends StatelessWidget {
       ),
       bottomNavigationBar: Consumer<CartModel>(
         builder: (context, cart, child) {
+          if (cart.cartItems.isEmpty) {
+            // Display a message if the cart is empty
+            return Center(
+              child: Text(
+                'Your cart is empty',
+                style: TextStyle(fontSize: 18.0),
+              ),
+            );
+          }
+
           return FutureBuilder<List<Product>>(
             // Fetch the product list
             future: fetchProducts(),
@@ -74,8 +84,15 @@ class ShoppingCartPage extends StatelessWidget {
               } else {
                 // Get the product list from the snapshot
                 final productList = snapshot.data ?? [];
+
+                // Calculate the total cost only if the cart is not empty
                 double totalCost =
                     cart.getTotalCost() - getDiscountTotal(cart, productList);
+
+                // Add delivery charges if the total cost after discount is less than 500
+                if (totalCost < 500) {
+                  totalCost += 50.0; // Add delivery charges
+                }
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -96,15 +113,26 @@ class ShoppingCartPage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16.0),
+                      if (totalCost < 500)
+                        Text(
+                          'Shipping charges of ₹50 applied',
+                          style: TextStyle(
+                            color: Colors.red, // Customize the color if needed
+                            fontSize: 14.0,
+                          ),
+                        ),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CheckoutFormPage(),
-                            ),
-                          );
-                        },
+                        onPressed: cart.cartItems.isNotEmpty
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CheckoutFormPage(),
+                                  ),
+                                );
+                              }
+                            : null, // Disable button if cart is empty
                         child: Text('Checkout'),
                       ),
                     ],
@@ -177,7 +205,7 @@ class ShoppingCartPage extends StatelessWidget {
     return 0.0;
   }
 
-// Function to calculate the total discount for all cart items
+  // Function to calculate the total discount for all cart items
   double getDiscountTotal(CartModel cart, List<Product> products) {
     double totalDiscount = 0;
 

@@ -78,9 +78,15 @@ class _OrderHandlingPageState extends State<OrderHandlingPage> {
 
   void _showOrderDetails(Map<String, dynamic> order) {
     print(order);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
+
+    // Fetch user information based on userEmail
+    FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: order['userEmail'])
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        var userSnapshot = querySnapshot.docs.first;
         int orderNumber = orders.indexOf(order) + 1;
         List<String> deliveryStatuses = [
           'Pending',
@@ -92,61 +98,70 @@ class _OrderHandlingPageState extends State<OrderHandlingPage> {
         String selectedStatus = order['status'];
 
         // Assuming the document ID is used as the order ID
-        String orderId =
-            order['orderId']; // Change 'id' to the actual field name
+        String orderId = order['orderId'];
 
-        return AlertDialog(
-          title: Text('Order Details - #$orderNumber'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDetailRow('Status', Text(order['status'])),
-                _buildDetailRow('User Email', Text(order['userEmail'])),
-                _buildDetailRow(
-                  'Address',
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          '${order['streetName']}, ${order['city']}, ${order['state']} ${order['pincode']}'),
-                    ],
-                  ),
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Order Details - #$orderNumber'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildDetailRow('Status', Text(order['status'])),
+                    _buildDetailRow('User Email', Text(order['userEmail'])),
+                    _buildDetailRow(
+                      'User Phone',
+                      Text(userSnapshot.get('phoneNumber') ?? 'N/A'),
+                    ),
+                    _buildDetailRow(
+                      'Address',
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              '${order['streetName']}, ${order['city']}, ${order['state']} ${order['pincode']}'),
+                        ],
+                      ),
+                    ),
+                    _buildDetailRow('Items', _buildItemList(order['items'])),
+                    _buildDetailRow(
+                        'Total Cost', Text('\₹${order['totalCost']}')),
+                    _buildDetailRow(
+                      'Change Status',
+                      DropdownButton<String>(
+                        value: selectedStatus,
+                        items: deliveryStatuses.map((String status) {
+                          return DropdownMenuItem<String>(
+                            value: status,
+                            child: Text(status),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          if (newValue != null && newValue != selectedStatus) {
+                            setState(() {
+                              selectedStatus = newValue;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                _buildDetailRow('Items', _buildItemList(order['items'])),
-                _buildDetailRow('Total Cost', Text('\₹${order['totalCost']}')),
-                _buildDetailRow(
-                  'Change Status',
-                  DropdownButton<String>(
-                    value: selectedStatus,
-                    items: deliveryStatuses.map((String status) {
-                      return DropdownMenuItem<String>(
-                        value: status,
-                        child: Text(status),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null && newValue != selectedStatus) {
-                        setState(() {
-                          selectedStatus = newValue;
-                        });
-                      }
-                    },
-                  ),
-                ),
+              ),
+              actions: [
+                _buildActionButton('Update and Confirm', () {
+                  _updateAndConfirmOrderStatus(orderId, selectedStatus);
+                  Navigator.pop(context);
+                }),
               ],
-            ),
-          ),
-          actions: [
-            _buildActionButton('Update and Confirm', () {
-              _updateAndConfirmOrderStatus(orderId, selectedStatus);
-              Navigator.pop(context);
-            }),
-          ],
+            );
+          },
         );
-      },
-    );
+      }
+    });
   }
 
   Widget _buildDetailRow(String label, Widget value) {
