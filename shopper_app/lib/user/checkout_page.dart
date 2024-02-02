@@ -9,7 +9,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shopper_app/user/product_list_page.dart';
 
 class CheckoutFormPage extends StatefulWidget {
-  const CheckoutFormPage({Key? key}) : super(key: key);
+  final double totalCost;
+
+  const CheckoutFormPage({Key? key, required this.totalCost}) : super(key: key);
 
   @override
   _CheckoutFormPageState createState() => _CheckoutFormPageState();
@@ -135,9 +137,8 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
           .get();
 
       userEmail = userSnapshot.get('email') ?? '';
-
       if (paymentMethod == 'onlinePayment') {
-        _initiateRazorpay(cartModel.getTotalCost());
+        _initiateRazorpay(widget.totalCost);
         return;
       }
 

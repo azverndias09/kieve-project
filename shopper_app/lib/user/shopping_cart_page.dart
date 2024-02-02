@@ -86,14 +86,18 @@ class ShoppingCartPage extends StatelessWidget {
                 final productList = snapshot.data ?? [];
 
                 // Calculate the total cost only if the cart is not empty
-                double totalCost =
-                    cart.getTotalCost() - getDiscountTotal(cart, productList);
+                double totalCost = cart.getTotalCost();
+                double discount = getDiscountTotal(cart, productList);
 
-                // Add delivery charges if the total cost after discount is less than 500
+// Subtract the discount
+                totalCost -= discount;
+
+// Add delivery charges if the total cost after discount is less than 500
                 if (totalCost < 500) {
-                  totalCost += 50.0; // Add delivery charges
+                  totalCost += 50.0;
+                  print(totalCost); // Add delivery charges
                 }
-
+                print(totalCost);
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -127,8 +131,9 @@ class ShoppingCartPage extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CheckoutFormPage(),
+                                    builder: (context) => CheckoutFormPage(
+                                      totalCost: totalCost,
+                                    ),
                                   ),
                                 );
                               }
@@ -174,34 +179,24 @@ class ShoppingCartPage extends StatelessWidget {
 
   // Function to calculate the discount for a cart item
   double getDiscount(CartItem cartItem, Product? product) {
-    // Check if the product and its discount tiers exist
     if (product != null &&
         product.discountTiers != null &&
         product.discountTiers.isNotEmpty) {
-      // Sort discount tiers by quantity in descending order
       product.discountTiers
           .sort((a, b) => b['quantity'].compareTo(a['quantity']));
 
-      // Iterate through discount tiers to find the applicable discount
       for (var tier in product.discountTiers) {
         int tierQuantity = tier['quantity'];
         double tierPercentage = tier['percentage'] / 100.0;
 
-        // Check if the cart item quantity meets or exceeds the tier quantity
         if (cartItem.quantity >= tierQuantity) {
           // Calculate the discount for the entire cart item cost
           double itemDiscount = cartItem.cost * tierPercentage;
-
-          // Store the discount for this item in the cartItem
-          cartItem.discount = itemDiscount;
-
-          // Return the calculated discount
           return itemDiscount;
         }
       }
     }
 
-    // No discount applicable for this item
     return 0.0;
   }
 
