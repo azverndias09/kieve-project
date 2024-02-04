@@ -28,4 +28,32 @@ class CategoryService {
       return [];
     }
   }
+
+  Future<void> addCategory(String categoryName) async {
+    try {
+      await categories.add({
+        'Name': categoryName,
+      });
+    } catch (e) {
+      throw ('Error adding category: $e');
+    }
+  }
+
+  Future<void> editCategory(String categoryId, String newName) async {
+    try {
+      await categories.doc(categoryId).update({
+        'Name': newName,
+      });
+    } catch (e) {
+      throw ('Error editing category: $e');
+    }
+  }
+
+  Future<void> deleteCategory(String categoryId) async {
+    try {
+      await categories.doc(categoryId).delete();
+    } catch (e) {
+      throw ('Error deleting category: $e');
+    }
+  }
 }

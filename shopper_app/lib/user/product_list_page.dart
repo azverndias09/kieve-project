@@ -191,46 +191,52 @@ class _ProductListPageState extends State<ProductListPage> {
 
                     int selectedQuantity = 1; // Default quantity
 
-                    return ListTile(
-                      title: Text(productList[index].name),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Stock: ${productList[index].stock}'),
-                          Text(
-                              '\₹${productList[index].cost.toStringAsFixed(2)}'),
-                        ],
-                      ),
-                      leading: Container(
-                        height: 80,
-                        width: 80,
-                        child: productList[index].imageUrl.isNotEmpty
-                            ? Image.network(productList[index].imageUrl)
-                            : Container(),
-                      ),
-                      onTap: () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ProductDetailPage(product: productList[index]),
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Text(productList[index].name),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Stock: ${productList[index].stock}'),
+                              Text(
+                                  '\₹${productList[index].cost.toStringAsFixed(2)}'),
+                            ],
                           ),
-                        )
-                      },
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(width: 8.0),
-                          ElevatedButton(
-                            onPressed: () {
-                              Provider.of<CartModel>(context, listen: false)
-                                  .addToCart(productList[index], quantity: 1);
-                            },
-                            child: const Text('Add to Cart'),
+                          leading: Container(
+                            height: 80,
+                            width: 80,
+                            child: productList[index].imageUrl.isNotEmpty
+                                ? Image.network(productList[index].imageUrl)
+                                : Container(),
                           ),
-                          const SizedBox(width: 8.0),
-                        ],
-                      ),
+                          onTap: () => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailPage(
+                                    product: productList[index]),
+                              ),
+                            )
+                          },
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(width: 8.0),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Provider.of<CartModel>(context, listen: false)
+                                      .addToCart(productList[index],
+                                          quantity: 1);
+                                },
+                                child: const Text('Add to Cart'),
+                              ),
+                              const SizedBox(width: 8.0),
+                            ],
+                          ),
+                        ),
+                        Divider(), // Divider between each product
+                      ],
                     );
                   },
                 ),

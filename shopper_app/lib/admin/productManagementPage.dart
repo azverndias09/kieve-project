@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopper_app/admin/add_product.dart';
+import 'package:shopper_app/admin/categoryManagement.dart';
 
 import 'package:shopper_app/models/category.dart';
 
@@ -706,7 +707,12 @@ class ProductManagementPage extends StatelessWidget {
           FloatingActionButton(
             heroTag: "btn2",
             onPressed: () {
-              _addCategory(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CategoryManagementPage(),
+                ),
+              );
             },
             child: const Icon(Icons.category),
           ),

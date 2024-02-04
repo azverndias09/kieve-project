@@ -154,9 +154,9 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
     var options = {
       'key': apiKey,
       'amount': (totalCost * 100).round(),
-      'name': 'Your App Name',
+      'name': 'Surba',
       'description': 'Payment for Order',
-      'prefill': {'contact': '1234567890', 'email': userEmail},
+      'prefill': {'email': userEmail},
       'external': {
         'wallets': ['paytm']
       },
