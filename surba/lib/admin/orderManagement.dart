@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
 class OrderHandlingPage extends StatefulWidget {
   const OrderHandlingPage({Key? key}) : super(key: key);
 
@@ -95,6 +94,7 @@ class _OrderHandlingPageState extends State<OrderHandlingPage> {
           'Out for Delivery',
           'Delivered',
           'Cancelled',
+          'Cancelled By User'
         ];
         String selectedStatus = order['status'];
 

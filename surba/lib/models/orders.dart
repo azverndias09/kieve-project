@@ -78,7 +78,7 @@ class OrderService {
         await orders.doc(documentId).update({
           'status': newStatus,
         });
-        print("done");
+        print(newStatus);
       } else {
         print('No document found with orderId: $orderId');
       }

@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (email.isNotEmpty && password.isNotEmpty) {
         UserCredential? userCredential =
-        await _authService.signInWithEmailAndPassword(email, password);
+            await _authService.signInWithEmailAndPassword(email, password);
 
         setState(() {
           _errorMessage = '';
@@ -182,7 +182,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20.0),
                           Container(
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black), // Added black border
+                              border: Border.all(
+                                  color: Colors.black), // Added black border
                               color: Colors.white.withOpacity(0.6),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
@@ -201,7 +202,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20.0),
                           Container(
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black), // Added black border
+                              border: Border.all(
+                                  color: Colors.black), // Added black border
                               color: Colors.white.withOpacity(0.6),
                               borderRadius: BorderRadius.circular(12.0),
                             ),
@@ -268,5 +270,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 }

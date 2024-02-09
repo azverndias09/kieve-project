@@ -1,16 +1,19 @@
 import 'package:SurbaMart/login.dart';
-import 'package:SurbaMart/models/cartItem.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
+import 'package:SurbaMart/models/cartItem.dart';
+import 'package:SurbaMart/user/order_history_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => CartModel(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartModel()),
+        ChangeNotifierProvider(create: (_) => OrderStatusProvider()),
+      ],
       child: MyApp(),
     ),
   );
@@ -22,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'SurbaMart',
       home: LoginScreen(),
-      debugShowCheckedModeBanner: false, // Add this line to remove the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
 }

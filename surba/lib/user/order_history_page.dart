@@ -1,8 +1,19 @@
 import 'package:SurbaMart/user/order_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class OrderStatusProvider extends ChangeNotifier {
+  Map<String, String> _orderStatusMap = {};
+
+  Map<String, String> get orderStatusMap => _orderStatusMap;
+
+  void updateOrderStatus(String orderId, String status) {
+    _orderStatusMap[orderId] = status;
+    notifyListeners();
+  }
+}
 
 class OrderHistoryPage extends StatelessWidget {
   @override
@@ -11,35 +22,49 @@ class OrderHistoryPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Order History'),
       ),
-      body: FutureBuilder(
-        future: getOrderHistory(),
-        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            List<Map<String, dynamic>> orders = snapshot.data ?? [];
-            return ListView.builder(
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> order = orders[index];
-                return ListTile(
-                  title: Text('Order #${order['orderId']}'),
-                  subtitle: Text('Status: ${order['status']}'),
-                  onTap: () {
-                    print(order);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OrderDetailsPage(order: order),
-                      ),
+      body: Consumer<OrderStatusProvider>(
+        builder: (context, orderStatusProvider, _) {
+          return FutureBuilder<List<Map<String, dynamic>>>(
+            future: getOrderHistory(),
+            builder:
+                (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                List<Map<String, dynamic>> orders = snapshot.data ?? [];
+                return ListView.builder(
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> order = orders[index];
+                    String orderId = order['orderId'];
+                    String orderStatus =
+                        orderStatusProvider.orderStatusMap[orderId] ??
+                            order['status'];
+                    return ListTile(
+                      title: Text('Order #$orderId'),
+                      subtitle: Text('Status: $orderStatus'),
+                      onTap: () async {
+                        final updatedStatus = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OrderDetailsPage(order: order),
+                          ),
+                        );
+                        if (updatedStatus != null) {
+                          // Update the order status in the provider
+                          orderStatusProvider.updateOrderStatus(
+                              orderId, updatedStatus);
+                        }
+                      },
                     );
                   },
                 );
-              },
-            );
-          }
+              }
+            },
+          );
         },
       ),
     );
@@ -47,12 +72,9 @@ class OrderHistoryPage extends StatelessWidget {
 
   Future<List<Map<String, dynamic>>> getOrderHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Ensure that userId is not null or empty
     String? userId = prefs.getString('userUid');
 
     if (userId == null || userId.isEmpty) {
-      // Handle the case where userId is not available
       print("User ID is null or empty. Unable to get order history.");
       return [];
     }

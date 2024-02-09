@@ -1,0 +1,1 @@
+ C:\\Users\\azver\\OneDrive\\Desktop\\kieve_project\\shopper_app\\.dart_tool\\flutter_build\\5ae7816c57d22fdebdfb8ce51416d3eb\\native_assets.yaml: 
