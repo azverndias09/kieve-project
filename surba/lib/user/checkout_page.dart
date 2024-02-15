@@ -8,7 +8,6 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 class CheckoutFormPage extends StatefulWidget {
   final double totalCost;
 
@@ -175,7 +174,8 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
       state: _stateController.text,
       pincode: _pincodeController.text,
       userEmail: userEmail,
-      totalCost: cartModel.getTotalCost(),
+      //  totalCost: cartModel.getTotalCost(),
+      totalCost: widget.totalCost,
       status: 'Pending',
       items: cartModel.cartItems.map((item) => item.toMap()).toList(),
       paymentMethod: paymentMethod, // Pass the correct value for paymentMethod
@@ -215,6 +215,7 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
     CartModel cartModel = Provider.of<CartModel>(context, listen: false);
 
     double totalCost = cartModel.getTotalCost();
+    print('Total Cost: $totalCost');
     List<Map<String, dynamic>> orderItems =
         Provider.of<CartModel>(context, listen: false)
             .cartItems
@@ -229,7 +230,7 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
       state: state,
       pincode: pincode,
       userEmail: userEmail,
-      totalCost: totalCost,
+      totalCost: widget.totalCost,
       status: 'Pending',
       items: orderItems,
       paymentMethod: '',
